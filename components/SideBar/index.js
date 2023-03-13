@@ -19,7 +19,7 @@ const SideBar = (props) => {
   return (
     <div
       className={`bg-dark-orange min-h-screen p-5 pt-8 ${
-        openSideBar ? "w-80" : "w-24"
+        openSideBar ? "w-96" : "w-24"
       } duration-300 relative`}
     >
       <i

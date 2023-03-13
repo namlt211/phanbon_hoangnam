@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { getNow } from "../../../helpers/getNow";
-import {
-  updateProductByID,
-  updateSupplierAPI,
-} from "../../../services/product";
+import { updateProductByID } from "../../../services/product";
 import Popup from "../../../until/Popup";
 const UpdateProductPopup = (props) => {
   const { open, handleClose, product, handleReloadPage, listSupplier } = props;

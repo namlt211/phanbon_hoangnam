@@ -12,6 +12,12 @@ const DELETE_SUPPLIER_URL = SERVER_API_LOCALHOST + "supplier/delete/{id}";
 const GET_PRODUCT_BY_ID = SERVER_API_LOCALHOST + "product/getproductbyid/{id}";
 const UPDATE_PRODUCT_BY_ID = SERVER_API_LOCALHOST + "product/update/{id}";
 const DELETE_PRODUCT_BY_ID = SERVER_API_LOCALHOST + "product/delete/{id}";
+const ADD_CUSTOMER_URL = SERVER_API_LOCALHOST + "customer/add";
+const GET_ALL_CUSTOMER_URL = SERVER_API_LOCALHOST + "customer/getall";
+const UPDATE_CUSTOMER_URL = SERVER_API_LOCALHOST + "customer/update/{id}";
+const GET_CUSTOMER_BY_ID_URL = SERVER_API_LOCALHOST + "customer/getbyid/{id}";
+const DELETE_CUSTOMER_BY_ID_URL = SERVER_API_LOCALHOST + "customer/delete/{id}";
+const GET_ALL_ORDER_DETAILS_URL = SERVER_API_LOCALHOST + "order-details/getall";
 
 export {
   LOGIN_URL,
@@ -25,4 +31,10 @@ export {
   GET_PRODUCT_BY_ID,
   UPDATE_PRODUCT_BY_ID,
   DELETE_PRODUCT_BY_ID,
+  ADD_CUSTOMER_URL,
+  GET_ALL_CUSTOMER_URL,
+  UPDATE_CUSTOMER_URL,
+  GET_CUSTOMER_BY_ID_URL,
+  DELETE_CUSTOMER_BY_ID_URL,
+  GET_ALL_ORDER_DETAILS_URL,
 };

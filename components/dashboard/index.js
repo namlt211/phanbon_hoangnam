@@ -30,19 +30,33 @@ const Index = (props) => {
     },
     {
       id: 2,
-      name: "đơn hàng",
+      name: "quản lý đơn hàng",
       icon: "fa-brands fa-shopify",
       open: false,
+      subMenu: [
+        {
+          id: 1,
+          name: "đơn hàng",
+          icon: "fa-solid fa-list",
+          link: "/order-manager/order",
+        },
+        {
+          id: 2,
+          name: "khách hàng",
+          icon: "fa-solid fa-house",
+          link: "/order-manager/customer",
+        },
+      ],
     },
     {
       id: 3,
-      name: "cửa hàng",
+      name: "quản lý kho",
       icon: "fa-solid fa-shop",
       open: false,
     },
     {
       id: 4,
-      name: "tùy chỉnh",
+      name: "thống kê",
       icon: "fa-solid fa-gears",
       open: false,
     },
