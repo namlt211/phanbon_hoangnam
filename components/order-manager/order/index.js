@@ -1,4 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getAllCustomer } from "../../../services/customer";
+import { getAllOrderDetails } from "../../../services/order";
+import { getAllProduct } from "../../../services/product";
+import AddPopup from "./addPopup";
 
 const Index = () => {
   const threads = [
@@ -14,12 +18,56 @@ const Index = () => {
     { key: "active", name: "Tùy chỉnh" },
   ];
 
-  //testing
+  //reload page
+  const [reload, setReload] = useState(false);
+  const handleReload = () => setReload(!reload);
 
-  const listTest = [];
+  //modal add
+  const [openModalAdd, setOpenModalAdd] = useState(false);
+  const handleOpenModalAdd = () => setOpenModalAdd(true);
+  const handleCloseModalAdd = () => setOpenModalAdd(false);
 
-  const handleBtnAdd = () => {
-    console.log("add button");
+  //List order details
+  const [orderDetails, setOrderDetails] = useState([]);
+
+  //product list
+  const [productList, setProductList] = useState([]);
+
+  //customer list
+  const [customerList, setCustomerList] = useState([]);
+  //events page load start
+  // load order details list
+  const getAllOrderDetailList = async () => {
+    let data = await getAllOrderDetails();
+    if (data.status) {
+      setOrderDetails(data.data);
+    }
+  };
+  useEffect(() => {
+    getAllOrderDetailList();
+  }, [reload]);
+  //events page load end
+
+  //load product list
+  const getProductList = async () => {
+    let data = await getAllProduct();
+    if (data.status) {
+      setProductList(data.data);
+    }
+  };
+
+  //load customer list
+  const getCustomerList = async () => {
+    let data = await getAllCustomer();
+    if (data.status) {
+      setCustomerList(data.data);
+    }
+  };
+
+  const handleBtnAdd = async () => {
+    getProductList();
+    getCustomerList();
+    handleOpenModalAdd();
   };
   return (
     <div>
@@ -88,8 +136,8 @@ const Index = () => {
             </tr>
           </thead>
           <tbody className="text-xs">
-            {listTest.length > 0 ? (
-              listTest?.map((tr) => (
+            {orderDetails.length > 0 ? (
+              orderDetails?.map((tr) => (
                 <tr
                   key={tr.id}
                   style={{
@@ -137,6 +185,13 @@ const Index = () => {
           </tbody>
         </table>
       </div>
+      <AddPopup
+        open={openModalAdd}
+        handleClose={handleCloseModalAdd}
+        productList={productList}
+        customerList={customerList}
+        handleReload={handleReload}
+      />
     </div>
   );
 };
