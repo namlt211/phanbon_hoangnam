@@ -58,15 +58,11 @@ const Index = () => {
             </div>
           </div>
           <div className="w-2/5 bg-dark-orange text-white py-40 px-12">
-            <h2 className="text-4xl font-bold mb-2">Tạo tài khoản</h2>
+            <h2 className="text-4xl font-bold mb-2">
+              Đại Lý Phân Bón Hoàng Nam
+            </h2>
             <div className="border w-16 border-white inline-block border-solid mb-10"></div>
-            <p className="mb-7 text-xl">Thông tin cá nhân</p>
-            <a
-              href="#"
-              className="text-2xl border border-solid py-2 px-12 inline-block font-semibold cursor-pointer hover:bg-white hover:text-dark-orange duration-300"
-            >
-              Đăng ký
-            </a>
+            <p className="mb-7 text-xl">Hùng Vương, Hà Mòn, Đăk Hà, Kon Tum</p>
           </div>
         </div>
       </main>

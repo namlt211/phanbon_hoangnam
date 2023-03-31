@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
+import { getNow } from "../../../helpers/getNow";
 import { getAllCustomer, getCustomerByID } from "../../../services/customer";
 import AddPopup from "./addPopup";
 import DeletePopup from "./deletePopup";
@@ -11,7 +12,6 @@ const Index = () => {
     { key: "manuId", name: "Tên khách hàng" },
     { key: "phone", name: "Số điện thoại" },
     { key: "address", name: "Địa chỉ" },
-    { key: "status", name: "Trạng thái" },
     { key: "action", name: "Tùy chỉnh" },
   ];
   //customer list start
@@ -19,7 +19,12 @@ const Index = () => {
   //customer list end
 
   //customer object start
-  const [customerObj, setCustomerObj] = useState({});
+  const [customerObj, setCustomerObj] = useState({
+    name: "",
+    phone: "",
+    address: "",
+    updated_at: getNow(),
+  });
   //customer object end
 
   //customer id start
@@ -121,9 +126,9 @@ const Index = () => {
         </div>
       </div>
       {/* Table */}
-      <div className="py-10">
+      <div className="py-10 text-xl">
         <table className="w-full">
-          <thead className="bg-[#f3f4f6] text-xs">
+          <thead className="bg-[#f3f4f6]">
             <tr
               style={{
                 borderTop: "1px solid #dee1e6",
@@ -149,8 +154,8 @@ const Index = () => {
               <th></th>
             </tr>
           </thead>
-          <tbody className="text-xs">
-            {listCustomer.length > 0 ? (
+          <tbody className="text-2xl">
+            {listCustomer?.length > 0 ? (
               listCustomer?.map((tr) => (
                 <tr
                   key={tr.id}
@@ -173,8 +178,7 @@ const Index = () => {
                   </td>
                   <td className="pl-8">{tr?.phone}</td>
                   <td className="pl-8">{tr?.address}</td>
-                  <td className="pl-8">{tr?.status}</td>
-                  <td className="pl-8 flex justify-between w-1/2 text-xl text-dark-orange">
+                  <td className="pl-8 flex justify-between w-1/3 text-xl text-dark-orange">
                     <div onClick={() => handleUpdateCustomerClick(tr.id)}>
                       <i className="fa-solid fa-pen cursor-pointer"></i>
                     </div>
@@ -208,6 +212,7 @@ const Index = () => {
       <UpdatePopup
         open={openModalUpdate}
         customerObj={customerObj}
+        setCustomerObj={setCustomerObj}
         handleOpen={handleOpenModalUpdate}
         handleClose={handleCloseModalUpdate}
         handleReloadPage={handleReloadPage}
@@ -229,7 +234,7 @@ const Index = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        className="text-xs font-roboto"
+        className="text-xl font-roboto"
       />
     </div>
   );

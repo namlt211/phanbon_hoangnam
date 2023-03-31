@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { UNIT_PRODUCT } from "../../../config/constant";
+import { formatMoney } from "../../../helpers/getNow";
+import { checkInput } from "../../../helpers/validate";
 import { addProductAPI } from "../../../services/product";
 import Popup from "../../../until/Popup";
 const AddProductPopup = (props) => {
@@ -10,19 +13,11 @@ const AddProductPopup = (props) => {
     product_price: 0,
     supplier_id: 0,
     product_image: "",
+    unit: "",
   });
   const handleAddProductClick = async () => {
-    let prodAPI = {
-      product_name: product.product_name,
-      product_description: product.product_description,
-      product_price: parseFloat(product.product_price),
-      supplier_id: parseFloat(product.supplier_id),
-      product_image: product.product_image,
-    };
-    let data = await addProductAPI(prodAPI);
-    if (data.status) {
-      handleReloadPage();
-      toast.success(data.message, {
+    if (checkInput(product.product_name) !== true) {
+      toast.error("Tên sản phẩm " + checkInput(product.product_name), {
         position: "top-right",
         autoClose: 2000,
         hideProgressBar: false,
@@ -31,24 +26,73 @@ const AddProductPopup = (props) => {
         draggable: true,
         progress: undefined,
       });
-      setProduct({
-        product_name: "",
-        product_description: "",
-        product_price: 0,
-        supplier_id: 0,
-        product_image: "",
+      return;
+    } else if (product.product_price <= 0) {
+      toast.error("Giá phải lớn hơn 0 !", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
       });
-      handleClose();
+      return;
+    } else if (product.supplier_id === 0) {
+      toast.error("Bạn chưa chọn nhà cung cấp", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    } else if (product.unit === undefined) {
+      toast.error("Bạn chưa chọn đơn vị tính !", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
     } else {
-      toast.error("Lỗi khi tạo sản phẩm !", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-      });
+      let data = await addProductAPI(product);
+      if (data.status) {
+        handleReloadPage();
+        toast.success(data.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+        setProduct({
+          product_name: "",
+          product_description: "",
+          product_price: 0,
+          supplier_id: 0,
+          product_image: "",
+          unit: "",
+        });
+        handleClose();
+      } else {
+        toast.error("Lỗi khi tạo sản phẩm !", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     }
   };
   return (
@@ -99,6 +143,25 @@ const AddProductPopup = (props) => {
               />
             </div>
             <div className="flex flex-col w-full text-xl p-1">
+              <label>Đơn vị tính: </label>
+              <select
+                onChange={(e) =>
+                  setProduct({
+                    ...product,
+                    unit: e.target.value,
+                  })
+                }
+                className="border mt-1 w-full border-solid border-[#ccc] outline-none p-1 capitalize"
+              >
+                <option>Chọn đơn vị tính</option>
+                {UNIT_PRODUCT?.map((unit, index) => (
+                  <option key={index} value={unit}>
+                    {unit} kg
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col w-full text-xl p-1">
               <label>Nhà cung cấp: </label>
               <select
                 onChange={(e) =>
@@ -109,7 +172,7 @@ const AddProductPopup = (props) => {
                 }
                 className="border mt-1 w-full border-solid border-[#ccc] outline-none p-1 capitalize"
               >
-                <option value="">Chọn nhà cung cấp</option>
+                <option value={product.supplier_id}>Chọn nhà cung cấp</option>
                 {listSupplier?.map((sup, index) => (
                   <option key={index} value={sup.id}>
                     {sup.name}

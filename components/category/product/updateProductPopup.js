@@ -1,29 +1,48 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { UNIT_PRODUCT } from "../../../config/constant";
 import { getNow } from "../../../helpers/getNow";
+import { checkInput } from "../../../helpers/validate";
 import { updateProductByID } from "../../../services/product";
 import Popup from "../../../until/Popup";
 const UpdateProductPopup = (props) => {
-  const { open, handleClose, product, handleReloadPage, listSupplier } = props;
-
-  //rpoduct state
-  const [newProduct, setNewProduct] = useState({
-    product_name: product.product_name,
-    product_description: product.product_description,
-    product_price: product.product_price,
-    supplier_id: product.supplier_id,
-    product_image: product.product_image,
-    create_at: getNow(),
-  });
-
+  const {
+    open,
+    handleClose,
+    productObj,
+    handleReloadPage,
+    listSupplier,
+    setProductObj,
+  } = props;
   //handle click update
   const handleUpdateSupplierClick = async () => {
-    newProduct.product_price = parseFloat(newProduct.product_price);
-    newProduct.supplier_id = parseInt(newProduct.supplier_id);
-    let data = await updateProductByID(product.id, newProduct);
-    if (data.status) {
-      handleReloadPage();
-      toast.success(data.message, {
+    if (checkInput(productObj.name) === true && productObj.price > 0) {
+      let data = await updateProductByID(productObj.id, productObj);
+      if (data.status) {
+        handleReloadPage();
+        toast.success(data.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+        handleClose();
+      } else {
+        toast.error(data.response.data.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    } else {
+      toast.error("Kiểm tra lại thông tin !", {
         position: "top-right",
         autoClose: 2000,
         hideProgressBar: false,
@@ -32,7 +51,6 @@ const UpdateProductPopup = (props) => {
         draggable: true,
         progress: undefined,
       });
-      handleClose();
     }
   };
   return (
@@ -51,18 +69,21 @@ const UpdateProductPopup = (props) => {
               <label>Tên sản phẩm: </label>
               <input
                 type="text"
-                defaultValue={product.product_name}
+                value={productObj.name || ""}
                 onChange={(e) =>
-                  setNewProduct({ ...product, product_name: e.target.value })
+                  setProductObj({ ...productObj, name: e.target.value })
                 }
                 placeholder="Tên sản phẩm..."
                 className="border mt-1 border-solid border-[#ccc] p-1 outline-none w-full "
               />
               <label className="mt-2">Hình ảnh: </label>
               <input
-                defaultValue={product.product_image}
+                value={productObj.image || ""}
                 onChange={(e) =>
-                  setNewProduct({ ...product, product_image: e.target.value })
+                  setProductObj({
+                    ...productObj,
+                    image: e.target.value,
+                  })
                 }
                 type="text"
                 placeholder="Hình ảnh"
@@ -70,32 +91,60 @@ const UpdateProductPopup = (props) => {
               />
               <label className="mt-2">Giá: </label>
               <input
-                defaultValue={product.product_price}
+                value={productObj.price || 0}
                 onChange={(e) =>
-                  setNewProduct({
-                    ...product,
-                    product_price: e.target.value,
+                  setProductObj({
+                    ...productObj,
+                    price: e.target.value,
                   })
                 }
                 type="number"
                 placeholder="Giá"
                 className="border mt-1 border-solid border-[#ccc] p-1 outline-none capitalize w-full"
               />
-            </div>
-            <div className="flex flex-col w-full text-xl p-1">
-              <label>Nhà cung cấp: </label>
-              <select
+              <label className="mt-2">Khuyến mãi: </label>
+              <input
+                value={productObj.discount || 0}
                 onChange={(e) =>
-                  setNewProduct({
-                    ...product,
-                    supplier_id: e.target.value,
+                  setProductObj({
+                    ...productObj,
+                    discount: e.target.value,
+                  })
+                }
+                type="number"
+                placeholder="Giá"
+                className="border mt-1 border-solid border-[#ccc] p-1 outline-none capitalize w-full"
+              />
+              <label className="mt-2">Đơn vị tính: </label>
+              <select
+                value={productObj.unit}
+                onChange={(e) =>
+                  setProductObj({
+                    ...productObj,
+                    unit: e.target.value,
                   })
                 }
                 className="border mt-1 w-full border-solid border-[#ccc] outline-none p-1 capitalize"
               >
-                <option defaultValue={product.supplier_id}>
-                  Chọn nhà cung cấp
-                </option>
+                {UNIT_PRODUCT?.map((unit, index) => (
+                  <option key={index} value={unit}>
+                    {unit} kg
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col w-full text-xl p-1">
+              <label>Nhà cung cấp: </label>
+              <select
+                value={productObj.supplier_id}
+                onChange={(e) =>
+                  setProductObj({
+                    ...productObj,
+                    supplier_id: parseFloat(e.target.value),
+                  })
+                }
+                className="border mt-1 w-full border-solid border-[#ccc] outline-none p-1 capitalize"
+              >
                 {listSupplier?.map((sup, index) => (
                   <option key={index} value={sup.id}>
                     {sup.name}
@@ -107,12 +156,12 @@ const UpdateProductPopup = (props) => {
           <div className="pt-3 text-xl p-1 flex flex-col">
             <label className="">Mô tả sản phẩm</label>
             <textarea
-              defaultValue={product.product_description}
+              value={productObj.description}
               className="outline-none mt-2 p-2 min-h-[200px] border border-solid"
               onChange={(e) =>
-                setNewProduct({
-                  ...product,
-                  product_description: e.target.value,
+                setProductObj({
+                  ...productObj,
+                  description: e.target.value,
                 })
               }
               placeholder="Mô tả sản phẩm"

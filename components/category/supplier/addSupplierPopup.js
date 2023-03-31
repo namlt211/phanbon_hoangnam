@@ -8,6 +8,7 @@ const AddSupplierPopup = (props) => {
   //supplier state
   const [supplier, setSupplier] = useState({
     name: "",
+    phone: "",
     description: "",
   });
 
@@ -27,6 +28,7 @@ const AddSupplierPopup = (props) => {
       });
       setSupplier({
         name: "",
+        phone: "",
         description: "",
       });
       handleClose();
@@ -53,6 +55,16 @@ const AddSupplierPopup = (props) => {
                   setSupplier({ ...supplier, name: e.target.value })
                 }
                 placeholder="Tên sản phẩm..."
+                className="border mt-1 border-solid border-[#ccc] p-1 outline-none w-full "
+              />
+              <label className="pt-2">Số điện thoại: </label>
+              <input
+                type="text"
+                value={supplier.phone}
+                onChange={(e) =>
+                  setSupplier({ ...supplier, phone: e.target.value })
+                }
+                placeholder="Số điện thoại..."
                 className="border mt-1 border-solid border-[#ccc] p-1 outline-none w-full "
               />
             </div>

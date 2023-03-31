@@ -2,9 +2,11 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import noImg from "../../../assets/images/noImg.jpg";
+import { formatMoney, getNow } from "../../../helpers/getNow";
 import {
   getAllProduct,
   getAllSupplier,
+  getProductById,
   getPRoductById,
 } from "../../../services/product";
 import AddProductPopup from "./addProductPopup";
@@ -17,6 +19,8 @@ const ProductComponent = () => {
     { key: "manuId", name: "Tên sản phẩm" },
     { key: "image", name: "Hình ảnh" },
     { key: "price", name: "Giá" },
+    { key: "unit", name: "Đơn vị tinh" },
+    { key: "discount", name: "Khuyến mãi" },
     { key: "supplier", name: "Nhà cung cấp" },
     { key: "action", name: "Tùy chỉnh" },
   ];
@@ -25,7 +29,15 @@ const ProductComponent = () => {
   //product list end
 
   //product object start
-  const [productObj, setProductObj] = useState({});
+  const [productObj, setProductObj] = useState({
+    product_name: "",
+    product_image: "",
+    product_price: 0,
+    unit: "",
+    product_description: "",
+    supplier_id: 0,
+    updated_at: getNow(),
+  });
   //product object end
 
   //product id start
@@ -81,7 +93,7 @@ const ProductComponent = () => {
     if (listSupplier.status) {
       setListSupplier(listSupplier.data);
     }
-    let data = await getPRoductById(id);
+    let data = await getProductById(id);
     if (data.status) {
       setProductObj(data.data);
       handleOpenModalUpdateProduct();
@@ -132,7 +144,7 @@ const ProductComponent = () => {
       {/* Table */}
       <div className="py-10">
         <table className="w-full">
-          <thead className="bg-[#f3f4f6] text-xs">
+          <thead className="bg-[#f3f4f6] text-xl">
             <tr
               style={{
                 borderTop: "1px solid #dee1e6",
@@ -158,8 +170,8 @@ const ProductComponent = () => {
               <th></th>
             </tr>
           </thead>
-          <tbody className="text-xs">
-            {productList.length > 0 ? (
+          <tbody className="text-2xl">
+            {productList?.length > 0 ? (
               productList?.map((tr) => (
                 <tr
                   key={tr.id}
@@ -177,20 +189,20 @@ const ProductComponent = () => {
                   </td>
                   <td className="uppercase pl-8 ">
                     <div className="w-[150px] truncate text-ellipsis overflow-hidden">
-                      {tr.product_name}
+                      {tr.name}
                     </div>
                   </td>
                   <td className="px-8">
                     <Image
                       className="w-[40px] h-[40px]"
-                      src={tr?.product_image || noImg}
-                      alt={
-                        tr?.product_image ? tr?.product_name : "chưa có hình"
-                      }
+                      src={tr?.image || noImg}
+                      alt={tr?.image ? tr?.name : "chưa có hình"}
                     />
                   </td>
-                  <td className="pl-8">{tr?.product_price}</td>
-                  <td className="pl-8">{tr?.suppliers.name}</td>
+                  <td className="pl-8">{formatMoney(tr?.price || 0)}</td>
+                  <td className="pl-8">{tr?.unit || 0} kg/bao</td>
+                  <td className="pl-8">{tr?.discount || 0} %</td>
+                  <td className="pl-8">{tr?.supplier}</td>
                   <td className="pl-8 flex justify-between w-1/2 text-xl text-dark-orange">
                     <div onClick={() => handleUpdateProductClick(tr.id)}>
                       <i className="fa-solid fa-pen cursor-pointer"></i>
@@ -225,7 +237,8 @@ const ProductComponent = () => {
       />
       <UpdateProductPopup
         open={openModalUpdateProduct}
-        product={productObj}
+        productObj={productObj}
+        setProductObj={setProductObj}
         handleOpen={handleOpenModalUpdateProduct}
         handleClose={handleCloseModalUpdateProduct}
         handleReloadPage={handleReloadPage}
@@ -248,7 +261,7 @@ const ProductComponent = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        className="text-xs font-roboto"
+        className="text-xl font-roboto"
       />
     </div>
   );

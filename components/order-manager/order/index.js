@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import { formatDate, formatMoney } from "../../../helpers/getNow";
 import { getAllCustomer } from "../../../services/customer";
-import { getAllOrderDetails } from "../../../services/order";
+import { getAllOrder, getAllOrderDetails } from "../../../services/order";
 import { getAllProduct } from "../../../services/product";
 import AddPopup from "./addPopup";
 
 const Index = () => {
   const threads = [
-    { key: "couponId", name: "Mã đơn hàng" },
+    { key: "couponId", name: "Mã chi tiết" },
     { key: "manuId", name: "Tên khách hàng" },
     { key: "orderDate", name: "Ngày lập" },
-    { key: "product", name: "Sản phẩm" },
-    { key: "unit", name: "Đơn vị tính" },
-    { key: "price", name: "Đơn giá" },
-    { key: "quantity", name: "Số lượng" },
-    { key: "money", name: "Thành tiền" },
-    { key: "status", name: "Trạng thái" },
-    { key: "active", name: "Tùy chỉnh" },
+    { key: "total", name: "Tổng" },
+    { key: "paid", name: "Đã thanh toán" },
+    { key: "owed", name: "Còn lại" },
   ];
 
   //reload page
@@ -37,14 +35,14 @@ const Index = () => {
   const [customerList, setCustomerList] = useState([]);
   //events page load start
   // load order details list
-  const getAllOrderDetailList = async () => {
-    let data = await getAllOrderDetails();
+  const getAllOrderList = async () => {
+    let data = await getAllOrder();
     if (data.status) {
       setOrderDetails(data.data);
     }
   };
   useEffect(() => {
-    getAllOrderDetailList();
+    getAllOrderList();
   }, [reload]);
   //events page load end
 
@@ -69,6 +67,32 @@ const Index = () => {
     getCustomerList();
     handleOpenModalAdd();
   };
+  const handleShowOwed = (t, p) => {
+    const owedAmount = Math.floor((p * 100) / t);
+    const totalMoney = 100 - owedAmount;
+    const isFullyPaid = t === p;
+    const isUnpaid = p === 0;
+    return (
+      <td className="pl-8 flex">
+        {isFullyPaid && (
+          <div className=" bg-lime-500 p-2 w-[100%]">
+            Đã thanh toán {owedAmount} %
+          </div>
+        )}
+        {isUnpaid && (
+          <div className="bg-red-400 p-2 w-[100%]">Còn nợ {totalMoney} %</div>
+        )}
+        {!isFullyPaid && !isUnpaid && (
+          <>
+            <div className={`bg-yellow-300 p-2 w-[${owedAmount}%]`}>
+              {owedAmount} %
+            </div>
+          </>
+        )}
+      </td>
+    );
+  };
+
   return (
     <div>
       {/* Header  */}
@@ -109,7 +133,7 @@ const Index = () => {
       {/* Table */}
       <div className="py-10">
         <table className="w-full">
-          <thead className="bg-[#f3f4f6] text-xs">
+          <thead className="bg-[#f3f4f6] text-xl">
             <tr
               style={{
                 borderTop: "1px solid #dee1e6",
@@ -135,8 +159,8 @@ const Index = () => {
               <th></th>
             </tr>
           </thead>
-          <tbody className="text-xs">
-            {orderDetails.length > 0 ? (
+          <tbody className="text-xl">
+            {orderDetails?.length > 0 ? (
               orderDetails?.map((tr) => (
                 <tr
                   key={tr.id}
@@ -154,23 +178,13 @@ const Index = () => {
                   </td>
                   <td className="uppercase pl-8 ">
                     <div className="w-[150px] truncate text-ellipsis overflow-hidden">
-                      {tr.name}
+                      {tr.customer_name}
                     </div>
                   </td>
-                  <td className="pl-8">{tr?.phone}</td>
-                  <td className="pl-8">{tr?.address}</td>
-                  <td className="pl-8">{tr?.status}</td>
-                  <td className="pl-8 flex justify-between w-1/2 text-xl text-dark-orange">
-                    <div onClick={() => handleUpdateCustomerClick(tr.id)}>
-                      <i className="fa-solid fa-pen cursor-pointer"></i>
-                    </div>
-                    <div
-                      className="ml-2"
-                      onClick={() => handleDeleteProductClick(tr.id)}
-                    >
-                      <i className="fa-solid fa-trash cursor-pointer"></i>
-                    </div>
-                  </td>
+                  <td className="pl-8">{formatDate(tr?.created_at)}</td>
+                  <td className="pl-8">{formatMoney(tr?.total_amount)}</td>
+                  <td className="pl-8">{formatMoney(tr?.paid)}</td>
+                  {handleShowOwed(tr?.total_amount, tr?.paid)}
                 </tr>
               ))
             ) : (
@@ -191,6 +205,18 @@ const Index = () => {
         productList={productList}
         customerList={customerList}
         handleReload={handleReload}
+      />
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        className="text-xl font-roboto"
       />
     </div>
   );

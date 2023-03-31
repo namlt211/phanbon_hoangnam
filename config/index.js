@@ -18,6 +18,10 @@ const UPDATE_CUSTOMER_URL = SERVER_API_LOCALHOST + "customer/update/{id}";
 const GET_CUSTOMER_BY_ID_URL = SERVER_API_LOCALHOST + "customer/getbyid/{id}";
 const DELETE_CUSTOMER_BY_ID_URL = SERVER_API_LOCALHOST + "customer/delete/{id}";
 const GET_ALL_ORDER_DETAILS_URL = SERVER_API_LOCALHOST + "order-details/getall";
+const ADD_ORDER_URL = SERVER_API_LOCALHOST + "order/add";
+const ADD_ORDER_DETAILS_URL = SERVER_API_LOCALHOST + "order-details/add";
+const GET_ALL_ORDER_URL = SERVER_API_LOCALHOST + "order/getall";
+const ADD_PAYMENT_URL = SERVER_API_LOCALHOST + "payment/add";
 
 export {
   LOGIN_URL,
@@ -37,4 +41,8 @@ export {
   GET_CUSTOMER_BY_ID_URL,
   DELETE_CUSTOMER_BY_ID_URL,
   GET_ALL_ORDER_DETAILS_URL,
+  ADD_ORDER_URL,
+  ADD_ORDER_DETAILS_URL,
+  GET_ALL_ORDER_URL,
+  ADD_PAYMENT_URL,
 };

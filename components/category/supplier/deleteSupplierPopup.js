@@ -5,7 +5,8 @@ const DeleteSupplierPopup = (props) => {
   const { open, handleClose, id, handleReloadPage } = props;
 
   const handleDeleteSupplierClick = async () => {
-    let data = await deleteSupplierById(id);
+    let intId = parseFloat(id);
+    let data = await deleteSupplierById(intId);
     if (data.status) {
       handleReloadPage();
       toast.success(data.message, {

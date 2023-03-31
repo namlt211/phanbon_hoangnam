@@ -4,21 +4,10 @@ import { getNow } from "../../../helpers/getNow";
 import { updateCustomerByID } from "../../../services/customer";
 import Popup from "../../../until/Popup";
 const UpdatePopup = (props) => {
-  const { open, handleClose, customerObj, handleReloadPage } = props;
-  const [customer, setCustomer] = useState({
-    name: customerObj.name,
-    phone: customerObj.phone,
-    address: customerObj.address,
-    create_at: getNow(),
-  });
+  const { open, handleClose, customerObj, handleReloadPage, setCustomerObj } =
+    props;
   const handleAddCustomerClick = async () => {
-    let customerAPI = {
-      name: customer.name,
-      phone: customer.phone,
-      address: customer.address,
-      create_at: customer.create_at,
-    };
-    let data = await updateCustomerByID(customerObj.id, customerAPI);
+    let data = await updateCustomerByID(customerObj.id, customerObj);
     if (data.status) {
       handleReloadPage();
       toast.success(data.message, {
@@ -59,18 +48,18 @@ const UpdatePopup = (props) => {
               <label>Tên khách hàng: </label>
               <input
                 type="text"
-                defaultValue={customerObj.name}
+                value={customerObj.name || ""}
                 onChange={(e) =>
-                  setCustomer({ ...customer, name: e.target.value })
+                  setCustomerObj({ ...customerObj, name: e.target.value })
                 }
                 placeholder="Tên khách hàng..."
                 className="border mt-1 border-solid border-[#ccc] p-1 outline-none w-full "
               />
               <label className="mt-2">Số điện thoại: </label>
               <input
-                defaultValue={customerObj.phone}
+                value={customerObj.phone || ""}
                 onChange={(e) => {
-                  setCustomer({ ...customer, phone: e.target.value });
+                  setCustomerObj({ ...customerObj, phone: e.target.value });
                 }}
                 type="text"
                 placeholder="Số điện thoại"
@@ -78,9 +67,9 @@ const UpdatePopup = (props) => {
               />
               <label className="mt-2">Địa chỉ: </label>
               <input
-                defaultValue={customerObj.address}
+                value={customerObj.address || ""}
                 onChange={(e) =>
-                  setCustomer({ ...customer, address: e.target.value })
+                  setCustomerObj({ ...customerObj, address: e.target.value })
                 }
                 type="text"
                 placeholder="Địa chỉ"

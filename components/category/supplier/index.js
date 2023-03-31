@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
+import { getNow } from "../../../helpers/getNow";
 import { getAllSupplier, getSupplierById } from "../../../services/product";
 import AddSupplierPopup from "./AddSupplierPopup";
 import DeleteSupplierPopup from "./deleteSupplierPopup";
@@ -9,6 +10,7 @@ const Index = () => {
   const threads = [
     { key: "couponId", name: "Mã nhà cung cấp" },
     { key: "manuId", name: "Tên nhà cung cấp" },
+    { key: "phone", name: "Số điện thoại" },
     { key: "description", name: "Mô tả" },
     { key: "action", name: "Tùy chỉnh" },
   ];
@@ -29,7 +31,7 @@ const Index = () => {
   const handleCloseModalUpdate = () => setOpenModalUpdate(false);
   // Modal Update Supplier End
   //model delete Supplier Start
-  const [idSupplier, setIdSupplier] = useState("");
+  const [idSupplier, setIdSupplier] = useState(0);
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const handleOpenModalDelete = () => setOpenModalDelete(true);
   const handleCloseModalDelete = () => setOpenModalDelete(false);
@@ -37,7 +39,12 @@ const Index = () => {
   //List supplier
   const [listSupplier, setListSupplier] = useState([]);
   //supplier object api request
-  const [supplier, setSupplier] = useState({});
+  const [supplier, setSupplier] = useState({
+    name: "",
+    phone: "",
+    description: "",
+    create_at: getNow(),
+  });
   // handle get all supplier
   useEffect(() => {
     const getAllSuppliers = async () => {
@@ -101,7 +108,7 @@ const Index = () => {
       {/* Table */}
       <div className="py-10">
         <table className="w-full">
-          <thead className="bg-[#f3f4f6] text-xs">
+          <thead className="bg-[#f3f4f6] text-xl">
             <tr
               style={{
                 borderTop: "1px solid #dee1e6",
@@ -127,8 +134,8 @@ const Index = () => {
               <th></th>
             </tr>
           </thead>
-          <tbody className="text-xs">
-            {listSupplier.length > 0 ? (
+          <tbody className="text-2xl">
+            {listSupplier?.length > 0 ? (
               listSupplier?.map((tr) => (
                 <tr
                   key={tr.id}
@@ -149,8 +156,9 @@ const Index = () => {
                       {tr.name}
                     </div>
                   </td>
+                  <td className="pl-8">{tr?.phone || 0}</td>
                   <td className="pl-8">{tr?.description}</td>
-                  <td className="pl-8 flex justify-between w-1/2 text-xl text-dark-orange">
+                  <td className="pl-8 flex justify-between w-1/3 text-xl text-dark-orange">
                     <div onClick={() => handleUpdateSupplierClick(tr.id)}>
                       <i className="fa-solid fa-pen cursor-pointer"></i>
                     </div>
@@ -187,6 +195,7 @@ const Index = () => {
         handleOpen={handleOpenModalUpdate}
         handleClose={handleCloseModalUpdate}
         handleReloadPage={handleReloadPage}
+        setSupplier={setSupplier}
       />
       <DeleteSupplierPopup
         open={openModalDelete}
@@ -205,7 +214,7 @@ const Index = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        className="text-xs font-roboto"
+        className="text-xl font-roboto"
       />
     </div>
   );

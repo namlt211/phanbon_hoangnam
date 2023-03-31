@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { checkInput } from "../../../helpers/validate";
 import { addCustomers } from "../../../services/customer";
 import Popup from "../../../until/Popup";
 const AddPopup = (props) => {
@@ -10,15 +11,12 @@ const AddPopup = (props) => {
     address: "",
   });
   const handleAddCustomerClick = async () => {
-    let customerAPI = {
-      name: customer.name,
-      phone: customer.phone,
-      address: customer.address,
-    };
-    let data = await addCustomers(customerAPI);
-    if (data.status) {
-      handleReloadPage();
-      toast.success(data.message, {
+    if (
+      checkInput(customer.name) !== true ||
+      checkInput(customer.phone) !== true ||
+      checkInput(customer.address) !== true
+    ) {
+      toast.error(checkInput(customer.name), {
         position: "top-right",
         autoClose: 2000,
         hideProgressBar: false,
@@ -27,22 +25,37 @@ const AddPopup = (props) => {
         draggable: true,
         progress: undefined,
       });
-      setCustomer({
-        name: "",
-        phone: "",
-        address: "",
-      });
-      handleClose();
+      return;
     } else {
-      toast.error("Lỗi khi thêm khách hàng mới!", {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-      });
+      let data = await addCustomers(customer);
+      if (data.status) {
+        handleReloadPage();
+        toast.success(data.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+        setCustomer({
+          name: "",
+          phone: "",
+          address: "",
+        });
+        handleClose();
+      } else {
+        toast.error(data.response.data.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     }
   };
   return (
